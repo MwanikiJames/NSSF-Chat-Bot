@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +10,11 @@
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: linear-gradient(135deg, #e6ffec 0%, #b7ebc2 100%);
+        }
+        #userPhone {
+            background-color: #e6ffec;
+            border-color: #38a169;
         }
         .question-bubble {
             border-radius: 18px 18px 18px 0;
@@ -82,7 +85,7 @@
                     </div>
                     <div class="flex justify-start">
                         <div class="bg-indigo-100 question-bubble px-4 py-3 max-w-xs md:max-w-md">
-                            <p class="text-gray-800">You ask a question here, I receive it on WhatsApp (0719595025), and reply there. The answer will appear here!</p>
+                            <p class="text-gray-800">You ask a question here with your WhatsApp number, I'll receive it on WhatsApp (0719595025) and reply directly to your number. Make sure to save my number!</p>
                         </div>
                     </div>
                 </div>
@@ -94,7 +97,14 @@
                             type="text" 
                             id="questionInput" 
                             placeholder="Type your question..." 
-                            class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            required
+                        >
+                        <input
+                            type="tel"
+                            id="userPhone"
+                            placeholder="Your WhatsApp number (with country code)"
+                            class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             required
                         >
                         <button 
@@ -105,7 +115,7 @@
                             <i data-feather="send" class="ml-2 w-4 h-4"></i>
                         </button>
                     </form>
-                    <p class="text-xs text-gray-500 mt-2 text-center">By submitting, you agree to receive answers via WhatsApp</p>
+                    <p class="text-xs text-gray-500 mt-2 text-center">By submitting, you agree to receive answers via WhatsApp. Example number format: 254712345678</p>
                 </div>
             </div>
 
@@ -123,14 +133,14 @@
                         <i data-feather="smartphone" class="text-indigo-600"></i>
                     </div>
                     <h3 class="font-semibold text-lg mb-2">2. Sent to WhatsApp</h3>
-                    <p class="text-gray-600">Your question is forwarded to our WhatsApp number 0719595025.</p>
+                    <p class="text-gray-600">Your question is sent directly to our WhatsApp number 0719595025 along with your contact info.</p>
                 </div>
                 <div class="bg-white p-6 rounded-xl shadow-md">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-                        <i data-feather="message-circle" class="text-indigo-600"></i>
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                        <i data-feather="message-circle" class="text-green-600"></i>
                     </div>
                     <h3 class="font-semibold text-lg mb-2">3. Get Your Answer</h3>
-                    <p class="text-gray-600">We reply on WhatsApp and the answer appears here in the chat.</p>
+                    <p class="text-gray-600">We'll reply directly to your WhatsApp number. Please save 0719595025 in your contacts to receive messages.</p>
                 </div>
             </div>
         </div>
@@ -148,20 +158,25 @@
         document.getElementById('questionForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const questionInput = document.getElementById('questionInput');
+            const phoneInput = document.getElementById('userPhone');
             const question = questionInput.value.trim();
+            const phone = phoneInput.value.trim();
             
-            if (question) {
+            if (question && phone) {
                 // Add question to chat
                 addMessageToChat(question, 'user');
                 
-                // Here you would normally send to your server/WhatsApp API
-                // For demo, we'll simulate a response after 3 seconds
-                setTimeout(() => {
-                    addMessageToChat("Thanks for your question! I've received it on WhatsApp (0719595025) and will reply there shortly. The answer will appear here when I respond.", 'bot');
-                }, 1500);
+                // Send to WhatsApp API
+                const whatsappUrl = `https://api.whatsapp.com/send?phone=254719595025&text=${encodeURIComponent(`Question from ${phone}: ${question}`)}`;
+                window.open(whatsappUrl, '_blank');
                 
-                // Clear input
+                setTimeout(() => {
+                    addMessageToChat(`Thanks for your question! I'll reply to ${phone} on WhatsApp shortly. Please make sure to save 0719595025 in your contacts.`, 'bot');
+                }, 1000);
+                
+                // Clear inputs
                 questionInput.value = '';
+                phoneInput.value = '';
                 
                 // Scroll to bottom of chat
                 const chatContainer = document.getElementById('chatMessages');
